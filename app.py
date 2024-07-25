@@ -4,6 +4,11 @@ from ml import (
 )
 import streamlit as st
 import pandas as pd
+import joblib
+
+
+# scaler = joblib.load('scaler.joblib')
+# xgb = joblib.load('xgb_model.joblib')
 
 def is_valid_bmi(bmi):
     return 10 <= bmi <= 50
@@ -14,7 +19,7 @@ def is_valid_integer(value, min_value, max_value):
 def main():
    
     st.title("Hospital Form")
-    entrenar()
+    # entrenar()
     # BMI
     bmi = st.number_input("BMI (10-50):", min_value=10.0, max_value=50.0, step=0.1)
     if not is_valid_bmi(bmi):
@@ -106,12 +111,12 @@ def main():
         alcohol_drinking = 1 if alcohol_drinking == "Yes" else 0
         stroke = 1 if stroke == "Yes" else 0
         diff_walking = 1 if diff_walking == "Yes" else 0
-        sex = 1 if sex == "Male" else 0
+        sex = 1 if sex == "Male" else 2
         age_category_dict = {"18-24": 1, "25-29": 2, "30-34": 3, "35-39": 4, "40-44": 5, "45-49": 6, "50-54": 7, "55-59": 8, "60-64": 9, "65-69": 10, "70-74": 11, "75-79": 12, "80 or older": 13}
         age_category = age_category_dict.get(age_category, 0)
-        race_dict = {"White": 1, "Black": 2, "Asian": 3, "Other": 4}
+        race_dict = {"White": 1, "Black": 2, "Other race only": 3, "Multiracial": 4,"Hispanic": 5}
         race = race_dict.get(race, 0)
-        diabetic_dict = {"Yes": 1, "No": 0, "Borderline diabetes": 2, "During pregnancy": 3}
+        diabetic_dict = {"Yes": 1, "No": 3, "Borderline diabetes": 4, "During pregnancy": 2}
         diabetic = diabetic_dict.get(diabetic, 0)
         physical_activity = 1 if physical_activity == "Yes" else 0
         gen_health_dict = {"Excellent": 1, "Very Good": 2, "Good": 3, "Fair": 4, "Poor": 5}
