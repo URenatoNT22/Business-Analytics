@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from ml import preprocess_and_predict, entrenar
 import joblib
 
@@ -199,9 +200,20 @@ def main():
             # 'SkinCancer': [skin_cancer]
         })
 
+
         # Realizar la predicción
-        result = preprocess_and_predict(new_data)
+        result, impacto_df = preprocess_and_predict(new_data)
         st.write(result)
 
+        # Crear la figura y el eje
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Crear el gráfico de barras
+        ax.barh(impacto_df['Feature'], impacto_df['Impact'], color='#4C72B0')
+        ax.set_xlabel('Importance')
+        ax.set_title('Feature Impact')
+        ax.invert_yaxis()
+        st.pyplot(fig)
+    
 if __name__ == "__main__":
     main()

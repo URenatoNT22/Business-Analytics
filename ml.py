@@ -87,6 +87,6 @@ def preprocess_and_predict(data):
     else:
         mensaje += "No presentas una enfermedad cardiaca"
     
-    return mensaje
+    return mensaje,impacto_df
 
 entrenar()
