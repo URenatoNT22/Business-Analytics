@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ml import preprocess_and_predict, entrenar
 import joblib
+from PIL import Image
 
 # scaler = joblib.load('scaler.joblib')
 # xgb = joblib.load('xgb_model.joblib')
@@ -69,93 +70,99 @@ def is_valid_integer(value, min_value, max_value):
     return min_value <= value <= max_value
 
 def main():
-    st.title("Hospital Form")
-    # entrenar()
+    st.title("Heart Disease Prediction Form")
 
-    # BMI
-    bmi = st.number_input("BMI (10-50):", min_value=10.0, max_value=50.0, step=0.1)
-    if not is_valid_bmi(bmi):
-        st.error("Invalid BMI. Please enter a number between 10 and 50.")
-
-    # Smoking
-    smoking = st.selectbox("Do you smoke?", ["Select..."] + list(SMOKER_STATUS.values()))
-    if smoking == "Select...":
-        st.error("Please select an option for smoking.")
-
-    # Alcohol Drinking
-    alcohol_drinking = st.selectbox("Do you drink alcohol?", ["Select...", "Yes", "No"])
-    if alcohol_drinking == "Select...":
-        st.error("Please select an option for alcohol drinking.")
-
-    # Stroke
-    stroke = st.selectbox("Have you ever had a stroke?", ["Select...", "Yes", "No"])
-    if stroke == "Select...":
-        st.error("Please select an option for stroke.")
-
-    # Physical Health
-    physical_health = st.number_input("Days of bad physical health in the past month (0-30):", min_value=0, max_value=30, step=1)
-    if not is_valid_integer(physical_health, 0, 30):
-        st.error("Invalid number. Please enter an integer between 0 and 30.")
-
-    # Mental Health
-    mental_health = st.number_input("Days of bad mental health in the past month (0-30):", min_value=0, max_value=30, step=1)
-    if not is_valid_integer(mental_health, 0, 30):
-        st.error("Invalid number. Please enter an integer between 0 and 30.")
-
-    # Difficulty Walking
-    diff_walking = st.selectbox("Do you have difficulty walking?", ["Select...", "Yes", "No"])
-    if diff_walking == "Select...":
-        st.error("Please select an option for difficulty walking.")
+    image = Image.open("./LogoForm.png")
+    resized_image = image.resize((300, 200))
+    st.image(resized_image, caption="Hospital Form", use_column_width=False)
 
     # Sex
     sex = st.selectbox("Sex:", ["Select..."] + list(SEX.values()))
     if sex == "Select...":
         st.error("Please select an option for sex.")
 
-    # Age Category
-    age_category = st.selectbox("Age Category:", ["Select..."] + list(AGE_CATEGORY.values()))
-    if age_category == "Select...":
-        st.error("Please select an age category.")
+    # General Health
+    gen_health = st.selectbox("General Health:", ["Select..."] + list(GEN_HEALTH.values()))
+    if gen_health == "Select...":
+        st.error("Please select an option for general health.")
 
-    # Race
-    race = st.selectbox("Race:", ["Select..."] + list(RACE.values()))
-    if race == "Select...":
-        st.error("Please select a race.")
+    # Physical Health Days
+    physical_health = st.number_input("Days of bad physical health in the past month (0-30):", min_value=0, max_value=30, step=1)
+    if not is_valid_integer(physical_health, 0, 30):
+        st.error("Invalid number. Please enter an integer between 0 and 30.")
+
+    # Mental Health Days
+    mental_health = st.number_input("Days of bad mental health in the past month (0-30):", min_value=0, max_value=30, step=1)
+    if not is_valid_integer(mental_health, 0, 30):
+        st.error("Invalid number. Please enter an integer between 0 and 30.")
+
+    # Physical Activities
+    physical_activity = st.selectbox("Do you engage in physical activity?", ["Select...", "Yes", "No"])
+    if physical_activity == "Select...":
+        st.error("Please select an option for physical activity.")
+
+    # Sleep Hours
+    sleep_time = st.number_input("Hours of sleep per night (0-24):", min_value=0, max_value=24, step=1)
+    if not is_valid_integer(sleep_time, 0, 24):
+        st.error("Invalid number. Please enter an integer between 0 and 24.")
+
+    # Had Heart Attack
+    # (esto no está en el formulario, se supone que es la variable objetivo, se omite)
+
+    # Had Stroke
+    stroke = st.selectbox("Have you ever had a stroke?", ["Select...", "Yes", "No"])
+    if stroke == "Select...":
+        st.error("Please select an option for stroke.")
+
+    # Had Kidney Disease
+    kidney_disease = st.selectbox("Do you have kidney disease?", ["Select...", "Yes", "No"])
+    if kidney_disease == "Select...":
+        st.error("Please select an option for kidney disease.")
 
     # Diabetic
     diabetic = st.selectbox("Are you diabetic?", ["Select..."] + list(DIABETES.values()))
     if diabetic == "Select...":
         st.error("Please select an option for diabetic.")
 
-    # Physical Activity
-    physical_activity = st.selectbox("Do you engage in physical activity?", ["Select...", "Yes", "No"])
-    if physical_activity == "Select...":
-        st.error("Please select an option for physical activity.")
+    # Difficulty Walking
+    diff_walking = st.selectbox("Do you have difficulty walking?", ["Select...", "Yes", "No"])
+    if diff_walking == "Select...":
+        st.error("Please select an option for difficulty walking.")
 
-    # General Health
-    gen_health = st.selectbox("General Health:", ["Select..."] + list(GEN_HEALTH.values()))
-    if gen_health == "Select...":
-        st.error("Please select an option for general health.")
+    # Smoker Status
+    smoking = st.selectbox("Do you smoke?", ["Select..."] + list(SMOKER_STATUS.values()))
+    if smoking == "Select...":
+        st.error("Please select an option for smoking.")
 
-    # Sleep Time
-    sleep_time = st.number_input("Hours of sleep per night (0-24):", min_value=0, max_value=24, step=1)
-    if not is_valid_integer(sleep_time, 0, 24):
-        st.error("Invalid number. Please enter an integer between 0 and 24.")
+    # Race Ethnicity Category
+    race = st.selectbox("Race:", ["Select..."] + list(RACE.values()))
+    if race == "Select...":
+        st.error("Please select a race.")
+
+    # Age Category
+    age_category = st.selectbox("Age Category:", ["Select..."] + list(AGE_CATEGORY.values()))
+    if age_category == "Select...":
+        st.error("Please select an age category.")
+
+    # BMI
+    bmi = st.number_input("BMI (10-50):", min_value=10.0, max_value=50.0, step=0.1)
+    if not is_valid_bmi(bmi):
+        st.error("Invalid BMI. Please enter a number between 10 and 50.")
+
+    # Alcohol Drinking
+    alcohol_drinking = st.selectbox("Do you drink alcohol?", ["Select...", "Yes", "No"])
+    if alcohol_drinking == "Select...":
+        st.error("Please select an option for alcohol drinking.")
+
+    # Had High Blood Cholesterol
+    skin_cancer = st.selectbox("Do you have High Cholesterol?", ["Select...", "Yes", "No"])
+    if skin_cancer == "Select...":
+        st.error("Please select an option for skin cancer.")
 
     # Asthma
     # asthma = st.selectbox("Do you have asthma?", ["Select...", "Yes", "No"])
     # if asthma == "Select...":
     #     st.error("Please select an option for asthma.")
-
-    # Kidney Disease
-    kidney_disease = st.selectbox("Do you have kidney disease?", ["Select...", "Yes", "No"])
-    if kidney_disease == "Select...":
-        st.error("Please select an option for kidney disease.")
-
-    # Skin Cancer
-    skin_cancer = st.selectbox("Do you have High Cholesterol?", ["Select...", "Yes", "No"])
-    if skin_cancer == "Select...":
-        st.error("Please select an option for skin cancer.")
 
     if st.button("Submit Form"):
         # Convert categorical data to numerical for the DataFrame

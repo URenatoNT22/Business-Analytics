@@ -51,11 +51,11 @@ def preprocess_and_predict(data):
     mensaje = ""
     modelo_rf = joblib.load('modelo_rf.joblib')
     
-    # Realizar la predicción
+  # Realizar la predicción
     new_prediction = modelo_rf.predict(data)
     predicciones_nuevas = modelo_rf.predict_proba(data)[:, 1]
-    mensaje += "La persona tiene aproximadamente {:.2f}% de riesgo de tener una enfermedad cardiaca.\n\n".format(predicciones_nuevas[0] * 100)
-    
+    mensaje += f"El riesgo estimado de enfermedad cardíaca es de {predicciones_nuevas[0] * 100:.2f}%.\n\n"
+
     # Calcular impacto de factores
     probabilidad_base = modelo_rf.predict_proba(data)[:, 1]
     X = joblib.load('X_data.joblib')
@@ -74,18 +74,16 @@ def preprocess_and_predict(data):
     impacto_df = impacto_df.sort_values(by='Impact', ascending=False)
     
     # Construir la cadena de impacto de factores con saltos de línea adecuados
-    impacto_str = "\nImportancia de Factores:\n"
+    importancias = []
     for index, row in impacto_df.iterrows():
-        impacto_str += f"{row['Feature']}: {row['Impact']}\n ,"
-    impacto_str += "\n\nPor lo tanto, su resultado es:\n"
-    
-    mensaje += impacto_str
-    
-    # Interpretar la predicción
-    if new_prediction[0] == 1:
-        mensaje += "Presentas una enfermedad cardiaca"
-    else:
-        mensaje += "No presentas una enfermedad cardiaca"
+        importancias.append(f"- {row['Feature']}: {row['Impact']:.2f}")
+
+    # Unir la lista de importancias en un string con saltos de línea
+    mensaje_importancias = "\n".join(importancias)
+
+    # Construir el mensaje final
+    mensaje += f"Las características más influyentes en la predicción son:\n\n{mensaje_importancias}\n\nPor lo tanto, según el modelo:\n"
+    mensaje += "Presentas una enfermedad cardíaca" if new_prediction[0] == 1 else "No presentas una enfermedad cardíaca"
     
     return mensaje,impacto_df
 
