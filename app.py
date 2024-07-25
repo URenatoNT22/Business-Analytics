@@ -1,14 +1,65 @@
-from ml import (
-    preprocess_and_predict,
-    entrenar
-)
 import streamlit as st
 import pandas as pd
+import numpy as np
+from ml import preprocess_and_predict, entrenar
 import joblib
-
 
 # scaler = joblib.load('scaler.joblib')
 # xgb = joblib.load('xgb_model.joblib')
+
+SEX = {1: 'Male', 2: 'Female'}
+
+GEN_HEALTH = {
+    1: "Excellent",
+    2: "Very good",
+    3: "Good",
+    4: "Fair",
+    5: "Poor"
+}
+
+PHYS_MEN_HEALTH = {77: np.nan, 88: 0, 99: np.nan}
+
+YES_NO_QUESTIONS = {1: 'Yes', 2: 'No'}
+
+SLEEP_TIME = lambda x: np.where(x > 24, np.nan, x)
+
+DIABETES = {
+    1: "Yes",
+    2: "Yes, but only during pregnancy (female)",
+    3: "No",
+    4: "No, pre-diabetes or borderline diabetes",
+}
+
+SMOKER_STATUS = {
+    1: "Current smoker - now smokes every day",
+    2: "Current smoker - now smokes some days",
+    3: "Former smoker",
+    4: "Never smoked"
+}
+
+RACE = {
+    1: "White only, Non-Hispanic",
+    2: "Black only, Non-Hispanic",
+    3: "Other race only, Non-Hispanic",
+    4: "Multiracial, Non-Hispanic",
+    5: "Hispanic"
+}
+
+AGE_CATEGORY = {
+    1: "Age 18 to 24",
+    2: "Age 25 to 29",
+    3: "Age 30 to 34",
+    4: "Age 35 to 39",
+    5: "Age 40 to 44",
+    6: "Age 45 to 49",
+    7: "Age 50 to 54",
+    8: "Age 55 to 59",
+    9: "Age 60 to 64",
+    10: "Age 65 to 69",
+    11: "Age 70 to 74",
+    12: "Age 75 to 79",
+    13: "Age 80 or older"
+}
 
 def is_valid_bmi(bmi):
     return 10 <= bmi <= 50
@@ -17,16 +68,16 @@ def is_valid_integer(value, min_value, max_value):
     return min_value <= value <= max_value
 
 def main():
-   
     st.title("Hospital Form")
     # entrenar()
+
     # BMI
     bmi = st.number_input("BMI (10-50):", min_value=10.0, max_value=50.0, step=0.1)
     if not is_valid_bmi(bmi):
         st.error("Invalid BMI. Please enter a number between 10 and 50.")
 
     # Smoking
-    smoking = st.selectbox("Do you smoke?", ["Select...", "Yes", "No"])
+    smoking = st.selectbox("Do you smoke?", ["Select..."] + list(SMOKER_STATUS.values()))
     if smoking == "Select...":
         st.error("Please select an option for smoking.")
 
@@ -56,22 +107,22 @@ def main():
         st.error("Please select an option for difficulty walking.")
 
     # Sex
-    sex = st.selectbox("Sex:", ["Select...", "Male", "Female"])
+    sex = st.selectbox("Sex:", ["Select..."] + list(SEX.values()))
     if sex == "Select...":
         st.error("Please select an option for sex.")
 
     # Age Category
-    age_category = st.selectbox("Age Category:", ["Select...", "18-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80 or older"])
+    age_category = st.selectbox("Age Category:", ["Select..."] + list(AGE_CATEGORY.values()))
     if age_category == "Select...":
         st.error("Please select an age category.")
 
     # Race
-    race = st.selectbox("Race:", ["Select...", "White", "Black", "Asian", "Other"])
+    race = st.selectbox("Race:", ["Select..."] + list(RACE.values()))
     if race == "Select...":
         st.error("Please select a race.")
 
     # Diabetic
-    diabetic = st.selectbox("Are you diabetic?", ["Select...", "Yes", "No"])
+    diabetic = st.selectbox("Are you diabetic?", ["Select..."] + list(DIABETES.values()))
     if diabetic == "Select...":
         st.error("Please select an option for diabetic.")
 
@@ -81,7 +132,7 @@ def main():
         st.error("Please select an option for physical activity.")
 
     # General Health
-    gen_health = st.selectbox("General Health:", ["Select...", "Excellent", "Very Good", "Good", "Fair", "Poor"])
+    gen_health = st.selectbox("General Health:", ["Select..."] + list(GEN_HEALTH.values()))
     if gen_health == "Select...":
         st.error("Please select an option for general health.")
 
@@ -105,23 +156,25 @@ def main():
     if skin_cancer == "Select...":
         st.error("Please select an option for skin cancer.")
 
-    if st.button("Enviar Form"):
+    if st.button("Submit Form"):
         # Convert categorical data to numerical for the DataFrame
-        smoking = 1 if smoking == "Yes" else 0
+        smoking_num = {v: k for k, v in SMOKER_STATUS.items()}
+        sex_num = {v: k for k, v in SEX.items()}
+        age_category_num = {v: k for k, v in AGE_CATEGORY.items()}
+        race_num = {v: k for k, v in RACE.items()}
+        diabetic_num = {v: k for k, v in DIABETES.items()}
+        gen_health_num = {v: k for k, v in GEN_HEALTH.items()}
+        
+        smoking = smoking_num.get(smoking, 0)
         alcohol_drinking = 1 if alcohol_drinking == "Yes" else 0
         stroke = 1 if stroke == "Yes" else 0
         diff_walking = 1 if diff_walking == "Yes" else 0
-        sex = 1 if sex == "Male" else 2
-        age_category_dict = {"18-24": 1, "25-29": 2, "30-34": 3, "35-39": 4, "40-44": 5, "45-49": 6, "50-54": 7, "55-59": 8, "60-64": 9, "65-69": 10, "70-74": 11, "75-79": 12, "80 or older": 13}
-        age_category = age_category_dict.get(age_category, 0)
-        race_dict = {"White": 1, "Black": 2, "Other race only": 3, "Multiracial": 4,"Hispanic": 5}
-        race = race_dict.get(race, 0)
-        diabetic_dict = {"Yes": 1, "No": 3, "Borderline diabetes": 4, "During pregnancy": 2}
-        diabetic = diabetic_dict.get(diabetic, 0)
+        sex = sex_num.get(sex, 0)
+        age_category = age_category_num.get(age_category, 0)
+        race = race_num.get(race, 0)
+        diabetic = diabetic_num.get(diabetic, 0)
         physical_activity = 1 if physical_activity == "Yes" else 0
-        gen_health_dict = {"Excellent": 1, "Very Good": 2, "Good": 3, "Fair": 4, "Poor": 5}
-        gen_health = gen_health_dict.get(gen_health, 0)
-        # asthma = 1 if asthma == "Yes" else 0
+        gen_health = gen_health_num.get(gen_health, 0)
         kidney_disease = 1 if kidney_disease == "Yes" else 0
         skin_cancer = 1 if skin_cancer == "Yes" else 0
 
@@ -142,7 +195,6 @@ def main():
             'AgeCategory': [age_category],
             'BMI': [bmi],
             'AlcoholDrinkers': [alcohol_drinking],
-            
             'HadHighBloodCholesterol': [skin_cancer]
             # 'SkinCancer': [skin_cancer]
         })
@@ -150,7 +202,6 @@ def main():
         # Realizar la predicción
         result = preprocess_and_predict(new_data)
         st.write(result)
-    
 
 if __name__ == "__main__":
     main()
