@@ -7,11 +7,12 @@ import joblib
 
 
 def entrenar():
-    datos = pd.read_csv('heart_2020_cleaned_numeric.csv')
-    datosX=datos.drop(columns=['HeartDisease'])
+    
+    datos = pd.read_csv('heart_numeric_no_nans.csv')
+    datosX=datos.drop(columns=['HadHeartAttack'])
     
     X_data = datosX
-    y_data = datos['HeartDisease']
+    y_data = datos['HadHeartAttack']
 
     # Dividir los datos en entrenamiento y prueba
     X_train, X_test, y_train, y_test = train_test_split(X_data, y_data, test_size=0.2, random_state=42)
@@ -21,7 +22,7 @@ def entrenar():
     modelo_rf.fit(X_train, y_train)
     predicciones = modelo_rf.predict(X_test)
     joblib.dump(modelo_rf, 'modelo_rf.joblib')
-
+    joblib.dump(X_data, 'X_data.joblib')
     # data.head()
 
     # y = data["HeartDisease"]
@@ -47,18 +48,45 @@ def entrenar():
     # print(classification_report(y_test,xgb_predicted))
 
 def preprocess_and_predict(data):
+    mensaje = ""
     modelo_rf = joblib.load('modelo_rf.joblib')
-    # xgb = joblib.load('xgb_model.joblib')
-    # Preprocesar el nuevo dato (aplicar el mismo escalado)
-    # new_data_scaled = scaler.transform(data)
+    
     # Realizar la predicción
     new_prediction = modelo_rf.predict(data)
+    predicciones_nuevas = modelo_rf.predict_proba(data)[:, 1]
+    mensaje += "La persona tiene aproximadamente {:.2f}% de riesgo de tener una enfermedad cardiaca.\n\n".format(predicciones_nuevas[0] * 100)
+    
+    # Calcular impacto de factores
+    probabilidad_base = modelo_rf.predict_proba(data)[:, 1]
+    X = joblib.load('X_data.joblib')
+    impactos = {}
+    
+    for feature in X.columns:
+        temp_df = data.copy()
+        valor_original = temp_df[feature].values[0]
+        valor_medio = X[feature].mean()
+        temp_df[feature] = valor_medio
+        probabilidad_cambiada = modelo_rf.predict_proba(temp_df)[:, 1]
+        impacto = abs(probabilidad_cambiada - probabilidad_base)[0]
+        impactos[feature] = impacto
+    
+    impacto_df = pd.DataFrame(list(impactos.items()), columns=['Feature', 'Impact'])
+    impacto_df = impacto_df.sort_values(by='Impact', ascending=False)
+    
+    # Construir la cadena de impacto de factores con saltos de línea adecuados
+    impacto_str = "\nImportancia de Factores:\n"
+    for index, row in impacto_df.iterrows():
+        impacto_str += f"{row['Feature']}: {row['Impact']}\n ,"
+    impacto_str += "\n\nPor lo tanto, su resultado es:\n"
+    
+    mensaje += impacto_str
+    
     # Interpretar la predicción
     if new_prediction[0] == 1:
-        return "Presentas una enfermedad cardiaca"
+        mensaje += "Presentas una enfermedad cardiaca"
     else:
-        return "No presentas una enfermedad cardiaca"
+        mensaje += "No presentas una enfermedad cardiaca"
     
-
+    return mensaje
 
 entrenar()

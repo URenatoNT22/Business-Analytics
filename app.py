@@ -91,9 +91,9 @@ def main():
         st.error("Invalid number. Please enter an integer between 0 and 24.")
 
     # Asthma
-    asthma = st.selectbox("Do you have asthma?", ["Select...", "Yes", "No"])
-    if asthma == "Select...":
-        st.error("Please select an option for asthma.")
+    # asthma = st.selectbox("Do you have asthma?", ["Select...", "Yes", "No"])
+    # if asthma == "Select...":
+    #     st.error("Please select an option for asthma.")
 
     # Kidney Disease
     kidney_disease = st.selectbox("Do you have kidney disease?", ["Select...", "Yes", "No"])
@@ -101,7 +101,7 @@ def main():
         st.error("Please select an option for kidney disease.")
 
     # Skin Cancer
-    skin_cancer = st.selectbox("Do you have skin cancer?", ["Select...", "Yes", "No"])
+    skin_cancer = st.selectbox("Do you have High Cholesterol?", ["Select...", "Yes", "No"])
     if skin_cancer == "Select...":
         st.error("Please select an option for skin cancer.")
 
@@ -121,29 +121,30 @@ def main():
         physical_activity = 1 if physical_activity == "Yes" else 0
         gen_health_dict = {"Excellent": 1, "Very Good": 2, "Good": 3, "Fair": 4, "Poor": 5}
         gen_health = gen_health_dict.get(gen_health, 0)
-        asthma = 1 if asthma == "Yes" else 0
+        # asthma = 1 if asthma == "Yes" else 0
         kidney_disease = 1 if kidney_disease == "Yes" else 0
         skin_cancer = 1 if skin_cancer == "Yes" else 0
 
         # Create the DataFrame
         new_data = pd.DataFrame({
-            'BMI': [bmi],
-            'Smoking': [smoking],
-            'AlcoholDrinking': [alcohol_drinking],
-            'Stroke': [stroke],
-            'PhysicalHealth': [physical_health],
-            'MentalHealth': [mental_health],
-            'DiffWalking': [diff_walking],
             'Sex': [sex],
+            'GeneralHealth': [gen_health],
+            'PhysicalHealthDays': [physical_health],
+            'MentalHealthDays': [mental_health],
+            'PhysicalActivities': [physical_activity],
+            'SleepHours': [sleep_time],
+            'HadStroke': [stroke],
+            'HadKidneyDisease': [kidney_disease],
+            'HadDiabetes': [diabetic],
+            'DifficultyWalking': [diff_walking],
+            'SmokerStatus': [smoking],
+            'RaceEthnicityCategory': [race],
             'AgeCategory': [age_category],
-            'Race': [race],
-            'Diabetic': [diabetic],
-            'PhysicalActivity': [physical_activity],
-            'GenHealth': [gen_health],
-            'SleepTime': [sleep_time],
-            'Asthma': [asthma],
-            'KidneyDisease': [kidney_disease],
-            'SkinCancer': [skin_cancer]
+            'BMI': [bmi],
+            'AlcoholDrinkers': [alcohol_drinking],
+            
+            'HadHighBloodCholesterol': [skin_cancer]
+            # 'SkinCancer': [skin_cancer]
         })
 
         # Realizar la predicción
