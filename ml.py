@@ -50,6 +50,7 @@ def entrenar():
 def preprocess_and_predict(data):
     mensaje = ""
     modelo_rf = joblib.load('modelo_rf.joblib')
+    new_prediction = modelo_rf.predict(data)
     
   # Realizar la predicción
     new_prediction = modelo_rf.predict(data)
@@ -85,6 +86,6 @@ def preprocess_and_predict(data):
     mensaje += f"Las características más influyentes en la predicción son:\n\n{mensaje_importancias}\n\nPor lo tanto, según el modelo:\n"
     mensaje += "Presentas una enfermedad cardíaca" if new_prediction[0] == 1 else "No presentas una enfermedad cardíaca"
     
-    return mensaje,impacto_df
+    return mensaje,impacto_df,new_prediction[0]
 
 entrenar()

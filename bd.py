@@ -9,6 +9,7 @@ def create_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS patient_data (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            HeartDisease INTEGER,
             Sex INTEGER,
             GeneralHealth INTEGER,
             PhysicalHealthDays INTEGER,

@@ -233,7 +233,7 @@ def main():
 
 
             # Realizar la predicción
-            result, impacto_df = preprocess_and_predict(new_data)
+            result, impacto_df, resultInt = preprocess_and_predict(new_data)
             st.write(result)
 
             # Crear la figura y el eje
@@ -254,13 +254,13 @@ def main():
             cursor = conexion.cursor()
             date_registration = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             query = """INSERT INTO patient_data (
-                SmokerStatus, AlcoholDrinkers, HadStroke, DifficultyWalking, Sex,
+                HeartDisease, SmokerStatus, AlcoholDrinkers, HadStroke, DifficultyWalking, Sex,
                 AgeCategory, RaceEthnicityCategory, HadDiabetes, PhysicalActivities, GeneralHealth,
                 SleepHours, PhysicalHealthDays, MentalHealthDays, BMI, HadKidneyDisease, HadHighBloodCholesterol, dateRegistration)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             
             values = (
-                smoking, alcohol_drinking, stroke, diff_walking, sex,
+                resultInt ,smoking, alcohol_drinking, stroke, diff_walking, sex,
                 age_category, race, diabetic, physical_activity, gen_health,
                 sleep_time, physical_health, mental_health, bmi, kidney_disease, cholesterol, date_registration
             )
