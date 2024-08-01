@@ -17,14 +17,11 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 gen_ai.configure(api_key=GOOGLE_API_KEY)
 model = gen_ai.GenerativeModel('gemini-pro')
 
-def translate_role_for_streamlit(user_role):
-    if user_role == "model":
-        return "assistant"
-    else:
-        return user_role
-
+# Inicialización del estado de la sesión
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = model.start_chat(history=[])
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
 # Constants
 SEX = {1: 'Male', 2: 'Female'}
@@ -189,31 +186,26 @@ def main():
             f"que ayudarian a mejorar la salud del paciente (responde todo en español)"
         )
         
-        # Send the chatbot message without showing it in the chat history
-        chat_session = st.session_state.chat_session
-        chat_session.send_message(chatbot_message)
+        # Send the chatbot message and update chat history
+        chat_response = st.session_state.chat_session.send_message(chatbot_message)
+        st.session_state.chat_history.append({"role": "assistant", "content": chat_response.text})
 
-        # Display chatbot's response
-        st.session_state.chat_history = []
-        for message in chat_session.history:
-            if message.role == "model":
-                st.session_state.chat_history.append(message)
+    # Display chat history and input
+    st.title("🤖 Gemini Pro - ChatBot")
+    for message in st.session_state.chat_history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-        st.title("🤖 Gemini Pro - ChatBot")
-        for message in st.session_state.chat_history:
-            if message.role == "user":
-                with st.chat_message("user"):
-                    st.markdown(message.parts[0].text)
-            elif message.role == "model":
-                with st.chat_message("assistant"):
-                    st.markdown(message.parts[0].text)
-
-        user_prompt = st.chat_input("Ask Gemini-Pro...")
-        if user_prompt:
-            st.chat_message("user").markdown(user_prompt)
-            gemini_response = st.session_state.chat_session.send_message(user_prompt)
-            with st.chat_message("assistant"):
-                st.markdown(gemini_response.text)
+    user_prompt = st.chat_input("Ask Gemini-Pro...")
+    if user_prompt:
+        st.session_state.chat_history.append({"role": "user", "content": user_prompt})
+        with st.chat_message("user"):
+            st.markdown(user_prompt)
+        
+        gemini_response = st.session_state.chat_session.send_message(user_prompt)
+        st.session_state.chat_history.append({"role": "assistant", "content": gemini_response.text})
+        with st.chat_message("assistant"):
+            st.markdown(gemini_response.text)
 
 if __name__ == "__main__":
     main()
