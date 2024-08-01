@@ -6,3 +6,6 @@ seaborn
 scikit-learn
 xgboost
 mlxtend
+# Para el chatbot
+python-dotenv
+google-generativeai
