@@ -189,29 +189,31 @@ def main():
             f"que ayudarian a mejorar la salud del paciente (responde todo en español)"
         )
         
-        # Send the chatbot message and update chat history
+        # Send the chatbot message without showing it in the chat history
         chat_session = st.session_state.chat_session
-        chat_response = chat_session.send_message(chatbot_message)
-        st.session_state.chat_history.append({"role": "user", "text": chatbot_message})
-        st.session_state.chat_history.append({"role": "assistant", "text": chat_response.text})
+        chat_session.send_message(chatbot_message)
 
-    st.title("🤖 Gemini Pro - ChatBot")
-    for message in st.session_state.chat_history:
-        if message["role"] == "user":
-            with st.chat_message("user"):
-                st.markdown(message["text"])
-        elif message["role"] == "assistant":
+        # Display chatbot's response
+        st.session_state.chat_history = []
+        for message in chat_session.history:
+            if message.role == "model":
+                st.session_state.chat_history.append(message)
+
+        st.title("🤖 Gemini Pro - ChatBot")
+        for message in st.session_state.chat_history:
+            if message.role == "user":
+                with st.chat_message("user"):
+                    st.markdown(message.parts[0].text)
+            elif message.role == "model":
+                with st.chat_message("assistant"):
+                    st.markdown(message.parts[0].text)
+
+        user_prompt = st.chat_input("Ask Gemini-Pro...")
+        if user_prompt:
+            st.chat_message("user").markdown(user_prompt)
+            gemini_response = st.session_state.chat_session.send_message(user_prompt)
             with st.chat_message("assistant"):
-                st.markdown(message["text"])
-
-    user_prompt = st.chat_input("Ask Gemini-Pro...")
-    if user_prompt:
-        st.chat_message("user").markdown(user_prompt)
-        chat_response = st.session_state.chat_session.send_message(user_prompt)
-        st.session_state.chat_history.append({"role": "user", "text": user_prompt})
-        st.session_state.chat_history.append({"role": "assistant", "text": chat_response.text})
-        with st.chat_message("assistant"):
-            st.markdown(chat_response.text)
+                st.markdown(gemini_response.text)
 
 if __name__ == "__main__":
     main()
