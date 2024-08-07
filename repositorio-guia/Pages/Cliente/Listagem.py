@@ -3,9 +3,9 @@ import Controller.clienteController as clienteController
 import Pages.Cliente.Cadastro as PageCadastro
 
 def Listagem():
-    paramId = st.experimental_get_query_params()
-    if paramId == {}:  # Se parâmetro de atualização está zerado, listagem normal de clientes.
-        st.experimental_set_query_params()
+    query_params = st.query_params
+    if not query_params:  # Se parâmetro de atualização está zerado, listagem normal de clientes.
+        st.query_params.clear()
         st.title("Lista de clientes :clipboard:")
         columns = st.columns((1, 2, 1, 2, 1, 1))
         atributes = [':file_folder: ID', ':page_facing_up: Nome', ':calendar: Idade', ':construction_worker: Profissão', ':x: Excluir', ':arrows_clockwise: Alterar']
@@ -29,13 +29,11 @@ def Listagem():
                 clienteController.Excluir(item.id)
                 st.experimental_rerun()  # Reload da page para o cliente "sumir" da listagem
             if changeClick:
-                st.experimental_set_query_params(
-                    id=[item.id]
-                ) # Setando o parâmetro de ID na URL para dar GET na página de cadastro
+                st.query_params["id"] = item.id  # Setando o parâmetro de ID na URL para dar GET na página de cadastro
                 st.experimental_rerun()  # Reload de garantia
     else:
         PageCadastro.Cadastrar()  # Cadastro no modo 'Atualizar Cad.' pois parâmetro de id não está zerado.
         clickBack = st.button('Voltar')
         if clickBack:
-            st.experimental_set_query_params()  # Zerando parâmetro para liberar da tela de atualização
+            st.query_params.clear()  # Zerando parâmetro para liberar da tela de atualização
             st.experimental_rerun()  # Reload

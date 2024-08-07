@@ -3,17 +3,14 @@ import Controller.models.Cliente as Cliente  # import da classe Cliente
 import Controller.clienteController as ClienteController  # Funções de cliente
 
 def Cadastrar():
-    idAlterar = st.experimental_get_query_params()
-    st.experimental_set_query_params()
+    query_params = st.query_params
     clienteRecover = None
-    if idAlterar.get("id") is not None:
+    if "id" in query_params:
         # Se o parâmetro não estiver zerado, no caso quando o usuário já selecionou para alterar
-        idAlterar = idAlterar.get("id")[0]  # idAlterar = posição 0 do array ID
+        idAlterar = query_params["id"]  # idAlterar = posição 0 do array ID
         clienteRecover = ClienteController.SelecionarID(idAlterar)  # clienteRecover = cliente selecionado para alterar,
         # a partir da função Select by ID
-        st.experimental_set_query_params(
-            id=[clienteRecover.id]
-        )  # Definindo o parâmetro de alteração para o cliente a ser alterado
+        st.query_params["id"] = clienteRecover.id  # Definindo o parâmetro de alteração para o cliente a ser alterado
         st.title('Alterar cadastro :pencil2:')
     else:
         st.title('Cadastrar :white_check_mark:')
@@ -40,9 +37,8 @@ def Cadastrar():
             # Função de incluir cliente na database com cursor e commit
             st.success("Sucesso! Cliente cadastrado!")
         else:
-            st.experimental_set_query_params()
-            ClienteController.Alterar(Cliente.Cliente(clienteRecover.id, input_name, input_age,
-                                                      input_work))
+            st.query_params.clear()
+            ClienteController.Alterar(Cliente.Cliente(clienteRecover.id, input_name, input_age, input_work))
             # Função de alterar cliente na database com cursor e commit
             # valor de id é o ID do cliente a ser alterado, (clienteRecover.id), fazendo update na database
             st.success("Sucesso! Cliente alterado!")

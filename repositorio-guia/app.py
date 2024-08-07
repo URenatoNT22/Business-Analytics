@@ -10,7 +10,7 @@ st.sidebar.title(':page_facing_up: Menu')  # Sidebar
 sidebarOptions = st.sidebar.selectbox('Cliente', ['Cadastro', 'Consultar/Alterar'])  # Opções da sidebar - Menu
 
 if sidebarOptions == 'Cadastro':
-    st.query_params()  # Zerando o set de parâmetro ID para rodar o cadastro sem o modo "Atualizar"
+    st.query_params.clear()  # Zerando o set de parâmetro ID para rodar o cadastro sem o modo "Atualizar"
     PageCadastro.Cadastrar()
 
 if sidebarOptions == 'Consultar/Alterar':
