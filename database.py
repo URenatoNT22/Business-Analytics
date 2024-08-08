@@ -41,7 +41,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS results_data (
                     BMI REAL,
                     AlcoholDrinkers INTEGER,
                     HadHighBloodCholesterol INTEGER,
-                    dateRegistration DATE,
+                    dateRegistration DATETIME,
                     FOREIGN KEY (client_id) REFERENCES clients(id)
                 )''')
 
