@@ -5,7 +5,6 @@ def create_cliente(cliente):
     db.cursor.execute('INSERT INTO clients (first_name, last_name, DNI, email, age, sex, date_created) '
                       'VALUES (%s, %s, %s, %s, %s, %s, %s)', 
                       (cliente.first_name, cliente.last_name, cliente.DNI, cliente.email, cliente.age, cliente.sex, cliente.date_created))
-    db.bdConnection.commit()
 
 def read_clientes():
     db.cursor.execute('SELECT * FROM clients')
@@ -16,12 +15,10 @@ def read_clientes():
 
 def delete_cliente(id):
     db.cursor.execute('DELETE FROM clients WHERE id = %s', (id,))
-    db.bdConnection.commit()
 
 def update_cliente(cliente):
     db.cursor.execute('UPDATE clients SET first_name = %s, last_name = %s, DNI = %s, email = %s, age = %s, sex = %s, date_created = %s WHERE id = %s', 
                       (cliente.first_name, cliente.last_name, cliente.DNI, cliente.email, cliente.age, cliente.sex, cliente.date_created, cliente.id))
-    db.bdConnection.commit()
 
 def select_cliente_by_id(id):
     db.cursor.execute('SELECT * FROM clients WHERE id = %s', (id,))

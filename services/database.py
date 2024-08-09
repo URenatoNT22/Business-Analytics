@@ -1,17 +1,22 @@
+import os
+from dotenv import load_dotenv
 import mysql.connector
-from os import environ
 
-HOST = environ.get('HOST', 'localhost')
-PASSWD = environ.get('PASSWD', '12345678')
-USER = environ.get('USER', 'root')
-DATABASE = environ.get('DATABASE', 'heartDiseaseApp')
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
-bdConnection = mysql.connector.connect(
-    host=f'{HOST}',
-    user=f'{USER}',
-    password=f'{PASSWD}',
-    database=f'{DATABASE}',
-)  # Conexão com dados do banco de dados e MySQL
+# Obtener los valores de las variables de entorno
+host = os.getenv("DB_HOST")
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+database = os.getenv("DB_NAME")
 
-cursor = bdConnection.cursor()  # Cursor para executar conexão
-bdConnection.commit()
+conn = mysql.connector.connect(
+    host=host,
+    user=user,
+    password=password,
+    database=database
+)
+
+cursor = conn.cursor()  # Cursor para executar conexão
+conn.commit()

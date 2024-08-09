@@ -21,7 +21,7 @@ def Listagem():
         st.title("Lista de clientes :clipboard:")
         if st.button('Nuevo'):
             st.session_state.mode = 'create'
-            st.experimental_rerun()
+            st.rerun()
 
         columns = st.columns((1, 1, 1, 1, 1, 1, 1))
         attributes = [':file_folder: ID', ':page_facing_up: Nombre', ':email: age', ':email: sex', ':email: Email', ':calendar: date created', ':x: Opciones']
@@ -49,19 +49,17 @@ def Listagem():
             if editClick:
                 st.session_state.mode = 'edit'
                 st.session_state.client_id = cliente.id
-                st.experimental_rerun()  # Reload para atualizar os parâmetros
+                st.rerun()  # Reload para atualizar os parâmetros
 
             if deleteClick:
                 st.session_state.mode = 'delete'
                 st.session_state.client_id = cliente.id
-                st.experimental_rerun()
+                st.rerun()
 
             if analysisClick:
                 st.session_state.mode = 'analysis'
                 st.session_state.client_id = cliente.id
-                st.experimental_rerun()
-
-        
+                st.rerun()
 
     elif mode == 'create':
         # Formulário de criação de novo cliente
@@ -78,7 +76,7 @@ def Listagem():
             input_email = st.text_input(label='Correo electrónico:')
             input_age = st.number_input(label='Edad:', format='%i', step=1, min_value=18, max_value=120)
             input_gender = st.selectbox('Sexo:', options={'M': 0, 'F': 1})
-            input_date_created = st.date_input('Fecha de creación:', value=datetime.datetime.today())
+            input_date_created = st.date_input('Fecha de creación:', value=datetime.today())
 
             input_button_submit = st.form_submit_button("Submit")
 
@@ -86,7 +84,7 @@ def Listagem():
                 clienteController.create_cliente(Cliente(None, input_first_name, input_last_name, input_DNI, input_email, input_age, input_gender, input_date_created))
                 st.success("Sucesso! Cliente cadastrado!")
                 st.session_state.mode = 'list'  # Voltar ao modo de lista
-                st.experimental_rerun()  # Atualizar a página para mostrar o novo cliente
+                st.rerun()  # Atualizar a página para mostrar o novo cliente
 
     elif mode == 'edit':
         client_id = st.session_state.get('client_id')
@@ -111,10 +109,10 @@ def Listagem():
                     clienteController.update_cliente(Cliente(cliente.id, input_first_name, input_last_name, input_DNI, input_email, input_age, input_gender, input_date_created))
                     st.success("Sucesso! Cliente alterado!")
                     st.session_state.mode = 'list'  # Voltar ao modo de lista
-                    st.experimental_rerun()  # Atualizar a página para mostrar as alterações
+                    st.rerun()  # Atualizar a página para mostrar as alterações
                 if st.form_submit_button('Voltar'):
                     st.session_state.mode = 'list'
-                    st.experimental_rerun()
+                    st.rerun()
         
     elif mode == 'delete':
         # Confirmar eliminación de cliente
@@ -128,11 +126,11 @@ def Listagem():
                 clienteController.delete_cliente(client_id)
                 st.success("Cliente eliminado exitosamente.")
                 st.session_state.mode = 'list'
-                st.experimental_rerun()
+                st.rerun()
             
             if st.button('Cancelar'):
                 st.session_state.mode = 'list'
-                st.experimental_rerun()
+                st.rerun()
     
     elif mode == 'analysis':
         def is_valid_bmi(bmi):
@@ -329,4 +327,4 @@ def Listagem():
 
         if st.button('Cancelar'):
             st.session_state.mode = 'list'
-            st.experimental_rerun()
+            st.rerun()
